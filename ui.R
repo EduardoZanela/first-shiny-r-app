@@ -12,11 +12,12 @@ library(leaflet)
 library(DT)
 library(plotly)
 library(shinycssloaders)
+library(formattable)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
   fluidRow(
-    column(6, offset = 3,
+    column(12,
       titlePanel("Analise estatística do dataset FIFA 19")
     )
   ),
@@ -37,8 +38,8 @@ shinyUI(fluidPage(
                           hr(), 
                           withSpinner(plotlyOutput("distPlot")))
                    )
-                 )
-        #tabPanel("Mapa", leafletOutput("map")),
+                 ),
+        tabPanel("Mapa", withSpinner(leafletOutput("map", width = "100%",height = "700px")))
       )
     )
   )
