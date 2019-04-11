@@ -17,9 +17,8 @@ library(formattable)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   # importacao dos dados
-  posicoes <- read.csv(file="./data/posicoes.csv", header=TRUE, sep=",", encoding = "UTF-8")
-  fifa <- read.csv(file="./data/fifa.csv", header=TRUE, sep=",", encoding = "UTF-8")
-  countries <- read.csv(file="./data/countries.csv", header=TRUE, sep=",", encoding = "UTF-8")
+  posicoes <- read.csv(file="./data/posicoes.csv", header=TRUE, sep=",", encoding = "UTF-8", stringsAsFactors = FALSE)
+  countries <- read.csv(file="./data/countries.csv", header=TRUE, sep=",", encoding = "UTF-8", stringsAsFactors = FALSE)
   
   # cria um data frama com apes alguns campos e fotos em html para ser mostrado na tabela
   fifa_names <- data.frame(
@@ -34,7 +33,7 @@ shinyServer(function(input, output) {
     #filtra pelo nome do clube que vem do UI
     club_filtered_list <- subset(fifa, fifa$Club == input$club)
     #Cria vetor somente com Position e coluna chamada abreviation
-    club_filtered_list <- data.frame(abreviation = club_filtered_list$Position)
+    club_filtered_list <- data.frame(abreviation = club_filtered_list$Position, stringsAsFactors = F)
     #Left join inserir nome de posicoes na tabela
     chart_list <- left_join(club_filtered_list, posicoes, by="abreviation")
     # faz o calculo de jogadores por posicoes
@@ -50,17 +49,11 @@ shinyServer(function(input, output) {
     if (is.numeric(B)) return (as.numeric(B)) else return(X)
   }
   
-  # saida para ui renderiza a o input para selecao de times
-  output$fifa <- renderUI({
-    selectInput('club', 'Selecione o time', fifa$Club, selectize=TRUE)
-  })
-  
   #  plota o grafico 
   output$distPlot <- renderPlotly({
     # cria o filtro por posicao
-    filter <- chart_player_position_club()
     # plota grafico
-    plot_ly(filter, labels = ~nome, values = ~Freq, type = 'pie') %>%
+    plot_ly(chart_player_position_club(), labels = ~nome, values = ~Freq, type = 'pie') %>%
       layout(title = 'Grafico de posicoes de jogadores por clube',
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
@@ -68,8 +61,8 @@ shinyServer(function(input, output) {
   
   # saida para ui da tabela de jogadores
   output$table <- DT::renderDataTable({
-    DT::datatable(fifa_names, escape = FALSE)
-  }, options = list(pageLength = 5, stateSave = TRUE))
+    DT::datatable(fifa_names, escape = FALSE, options = list(pageLength = 5, stateSave = TRUE))
+  })
   
   # saida ui mapa com dados
   output$map <- renderLeaflet({

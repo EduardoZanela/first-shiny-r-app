@@ -1,0 +1,1 @@
+fifa <- read.csv(file="./data/fifa.csv", header=TRUE, sep=",", encoding = "UTF-8", stringsAsFactors = FALSE)

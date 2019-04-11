@@ -32,7 +32,7 @@ shinyUI(fluidPage(
                  br(),
                  fluidRow(
                    column(4,
-                          withSpinner(uiOutput('fifa'))
+                          selectInput('club', 'Selecione o time', choices = fifa$Club, selected = as.factor(levels(fifa$Club)[1]))
                    ),
                    column(8,
                           hr(), 
